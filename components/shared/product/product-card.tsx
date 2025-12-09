@@ -3,10 +3,11 @@ import Link from 'next/link';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import ProductPrice from './product-price';
+import { Product } from '@/types';
 
-const ProductCard = ({ product }: { product: any }) => {
+const ProductCard = ({ product }: { product: Product }) => {
   return (
-    <Card className="w-full max-w-sm overflow-hidden border shadow-sm  transition-shadow duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <Card className="w-full max-w-sm overflow-hidden border shadow-sm  transition-shadow  hover:-translate-y-1 hover:shadow-lg">
       <CardHeader className="p-0">
         <Link
           href={`/product/${product.slug}`}
