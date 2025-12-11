@@ -19,18 +19,22 @@ const callbackUrl = searchParams.get('callbackUrl') || '/';
   });
 
   const SignInButton = () => {
-  const { pending } = useFormStatus();
+    const { pending } = useFormStatus();
+    return (
+      <Button
+        disabled={pending}
+        className='w-full'
+        variant='default'
+      >
+        {pending ? 'Signing In...' : 'Continue with Email'}
+      </Button>
+    );
+  };
   return (
-    <Button disabled={pending} className='w-full' variant='default'>
-      {pending ? 'Signing In...' : 'Sign In with credentials'}
-    </Button>
-  );
-};
-  return (
-    <form action={action} >
+    <form action={action} className='space-y-4'>
       <input type='hidden' name='callbackUrl' value={callbackUrl} />
-      <div className='space-y-6'>
-        <div>
+      <div className='grid gap-4'>
+        <div className='grid gap-2'>
           <Label htmlFor='email'>Email</Label>
           <Input
             id='email'
@@ -41,8 +45,10 @@ const callbackUrl = searchParams.get('callbackUrl') || '/';
             autoComplete='email'
           />
         </div>
-        <div>
-          <Label htmlFor='password'>Password</Label>
+        <div className='grid gap-2'>
+          <div className='flex items-center justify-between'>
+            <Label htmlFor='password'>Password</Label>
+          </div>
           <Input
             id='password'
             name='password'
@@ -52,13 +58,12 @@ const callbackUrl = searchParams.get('callbackUrl') || '/';
             autoComplete='current-password'
           />
         </div>
-        <div>
-          <SignInButton />
-        </div>
-{data && !data.success && (
-  <div className='text-center text-destructive'>{data.message}</div>
-)}
-
+        <SignInButton />
+        {data && !data.success && data.message && (
+          <div className='rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive text-center'>
+            {data.message}
+          </div>
+        )}
         <div className='text-sm text-center text-muted-foreground'>
           Don&apos;t have an account?{' '}
           <Link target='_self' className='link' href='/sign-up'>

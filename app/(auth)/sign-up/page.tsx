@@ -12,6 +12,7 @@ import { APP_NAME } from '@/lib/constants';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import SignUpForm from './signup-form';
+import SocialButtons from '@/components/shared/auth/social-buttons';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -50,7 +51,13 @@ const SignUp = async (props: {
             Enter your information below to create your account
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'> <SignUpForm /></CardContent>
+        <CardContent className='space-y-4'>
+          <SocialButtons />
+          <div className='text-center text-xs uppercase text-muted-foreground'>
+            or continue with email
+          </div>
+          <SignUpForm />
+        </CardContent>
       </Card>
     </div>
   );

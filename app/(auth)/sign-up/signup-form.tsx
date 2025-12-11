@@ -22,16 +22,16 @@ const SignUpForm = () => {
     const { pending } = useFormStatus();
     return (
       <Button disabled={pending} className='w-full' variant='default'>
-        {pending ? 'Submitting...' : 'Sign Up'}
+        {pending ? 'Submitting...' : 'Create Account'}
       </Button>
     );
   };
 
   return (
-    <form action={action}>
+    <form action={action} className='space-y-4'>
       <input type='hidden' name='callbackUrl' value={callbackUrl} />
-      <div className='space-y-6'>
-        <div>
+      <div className='grid gap-4'>
+        <div className='grid gap-2'>
           <Label htmlFor='name'>Name</Label>
           <Input
             id='name'
@@ -42,7 +42,7 @@ const SignUpForm = () => {
             autoComplete='name'
           />
         </div>
-        <div>
+        <div className='grid gap-2'>
           <Label htmlFor='email'>Email</Label>
           <Input
             id='email'
@@ -53,7 +53,7 @@ const SignUpForm = () => {
             autoComplete='email'
           />
         </div>
-        <div>
+        <div className='grid gap-2'>
           <Label htmlFor='password'>Password</Label>
           <Input
             id='password'
@@ -64,7 +64,7 @@ const SignUpForm = () => {
             autoComplete='current-password'
           />
         </div>
-        <div>
+        <div className='grid gap-2'>
           <Label htmlFor='confirmPassword'>Confirm Password</Label>
           <Input
             id='confirmPassword'
@@ -75,12 +75,12 @@ const SignUpForm = () => {
             autoComplete='current-password'
           />
         </div>
-        <div>
-          <SignUpButton />
-        </div>
+        <SignUpButton />
 
-        {!data.success && (
-          <div className='text-center text-destructive'>{data.message}</div>
+        {!data.success && data.message && (
+          <div className='rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive text-center'>
+            {data.message}
+          </div>
         )}
 
         <div className='text-sm text-center text-muted-foreground'>

@@ -18,6 +18,7 @@ const ModeToggle = () => {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const current = mounted ? resolvedTheme ?? theme : undefined;
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   const renderIcon = () => {

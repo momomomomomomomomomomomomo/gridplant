@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
 import CredentialsSignInForm from './credentials-signin-form';
+import SocialButtons from '@/components/shared/auth/social-buttons';
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -48,7 +49,13 @@ if (session) {
             Select a method to sign in to your account
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'><CredentialsSignInForm /></CardContent>
+        <CardContent className='space-y-4'>
+          <SocialButtons />
+          <div className='text-center text-xs uppercase text-muted-foreground'>
+            or continue with email
+          </div>
+          <CredentialsSignInForm />
+        </CardContent>
       </Card>
     </div>
   );
