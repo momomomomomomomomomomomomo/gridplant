@@ -14,20 +14,18 @@ import {
 import { MoonIcon, SunIcon, SunMoon } from 'lucide-react';
 
 const ModeToggle = () => {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const current = mounted ? resolvedTheme ?? theme : undefined;
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
   const renderIcon = () => {
-    if (!mounted) return <SunMoon />; 
-
-    if (theme === 'dark') return <MoonIcon />;
-    if (theme === 'light') return <SunIcon />;
-    return <SunMoon />; 
+    // Avoid hydration mismatch by rendering a stable icon until mounted.
+    if (!mounted || !current) return <SunMoon />;
+    if (current === 'dark') return <MoonIcon />;
+    if (current === 'light') return <SunIcon />;
+    return <SunMoon />;
   };
 
   return (
@@ -37,7 +35,7 @@ const ModeToggle = () => {
           variant="ghost"
           className="focus-visible:ring-0 focus-visible:ring-offset-0"
         >
-          {renderIcon()}
+          <span suppressHydrationWarning>{renderIcon()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

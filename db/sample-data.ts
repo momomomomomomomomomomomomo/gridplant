@@ -1,4 +1,20 @@
+import { hashSync } from 'bcrypt-ts-edge';
+
 const sampleData = {
+  users: [
+    {
+      name: 'moustafa',
+      email: 'moustafa1moon@gmail.com',
+      password: hashSync('123456', 10),
+      role: 'admin',
+    },
+    {
+      name: 'mohamed',
+      email: 'mohamed@gmail.com',
+      password: hashSync('123456', 10),
+      role: 'user',
+    },
+  ],
   products: [
     {
       name: 'Modern Stainless Steel Watering Can',
