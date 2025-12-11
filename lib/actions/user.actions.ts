@@ -47,16 +47,33 @@ export async function signUp(prevState: unknown, formData: FormData) {
     });
 
     const plainPassword = user.password;
+    const hashed = hashSync(user.password, 10);
 
-    user.password = hashSync(user.password, 10);
-
-    await prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      },
+    const existing = await prisma.user.findUnique({
+      where: { email: user.email },
     });
+
+    if (existing) {
+      if (existing.password) {
+        return { success: false, message: 'Email already exists' };
+      }
+
+      await prisma.user.update({
+        where: { email: user.email },
+        data: {
+          password: hashed,
+          name: existing.name === 'NO_NAME' ? user.name : existing.name,
+        },
+      });
+    } else {
+      await prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          password: hashed,
+        },
+      });
+    }
 
     await signIn('credentials', {
       email: user.email,

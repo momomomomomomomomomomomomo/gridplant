@@ -61,6 +61,54 @@ providers: [
   }),
 ],
 callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        const email = user?.email ?? profile?.email;
+        if (!email) return false;
+
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+
+        const sessionState = account.session_state
+          ? String(account.session_state)
+          : null;
+
+        if (existingUser) {
+          await prisma.account.upsert({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              },
+            },
+            create: {
+              userId: existingUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at ?? null,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: sessionState,
+            },
+            update: {
+              userId: existingUser.id,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at ?? null,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: sessionState,
+            },
+          });
+        }
+      }
+
+      return true;
+    },
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session ({ session, token, trigger }: any) {
         // Map the token data to the session object
@@ -82,6 +130,7 @@ callbacks: {
     async jwt({ token, user, trigger, session }: any) {
         // Assign user fields to token
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
         // If user has no name, use email as their default name
@@ -94,6 +143,10 @@ callbacks: {
             data: { name: token.name },
           });
         }
+      }
+
+      if (!token.id && token.sub) {
+        token.id = token.sub;
       }
 
       // Handle session updates (e.g., name change)
