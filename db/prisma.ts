@@ -1,3 +1,4 @@
+import 'server-only';
 import dotenv from 'dotenv'
 import { PrismaClient } from '../lib/generated/prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon'

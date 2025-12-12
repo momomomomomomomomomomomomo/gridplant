@@ -6,61 +6,55 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import { prisma } from '@/db/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-
+import { authConfig } from './auth.config';
 
 export const config = {
-  pages: {
-    signIn: '/sign-in',
-    error: '/sign-in',
-  },
-  session: {
-  strategy: 'jwt',
-  maxAge: 30 * 24 * 60 * 60, // 30 days
-},
-adapter: PrismaAdapter(prisma),
-providers: [
-  GoogleProvider({
-    clientId: process.env.AUTH_GOOGLE_ID!,
-    clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-  }),
-  CredentialsProvider({
-    credentials: {
-      email: {
-        type: 'email',
-      },
-      password: { type: 'password' },
-    },
-    async authorize(credentials) {
-      if (credentials == null) return null
-
-      // Find user in database
-      const user = await prisma.user.findFirst({
-        where: {
-          email: credentials.email as string,
+  ...authConfig,
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+    }),
+    CredentialsProvider({
+      credentials: {
+        email: {
+          type: 'email',
         },
-      })
-      // Check if user exists and password is correct
-      if (user && user.password) {
-        const isMatch = compareSync(
-          credentials.password as string,
-          user.password
-        )
-        // If password is correct, return user object
-        if (isMatch) {
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
+        password: { type: 'password' },
+      },
+      async authorize(credentials) {
+        if (credentials == null) return null
+
+        // Find user in database
+        const user = await prisma.user.findFirst({
+          where: {
+            email: credentials.email as string,
+          },
+        })
+        // Check if user exists and password is correct
+        if (user && user.password) {
+          const isMatch = compareSync(
+            credentials.password as string,
+            user.password
+          )
+          // If password is correct, return user object
+          if (isMatch) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+            }
           }
         }
-      }
-      // If user doesn't exist or password is incorrect, return null
-      return null
-    },
-  }),
-],
-callbacks: {
+        // If user doesn't exist or password is incorrect, return null
+        return null
+      },
+    }),
+  ],
+  callbacks: {
+    ...authConfig.callbacks,
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google') {
         const email = user?.email ?? profile?.email;
@@ -110,25 +104,25 @@ callbacks: {
       return true;
     },
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async session ({ session, token, trigger }: any) {
-        // Map the token data to the session object
-        session.user.id = token.id;
-        session.user.name = token.name; // 👈 Add this line
-        session.user.role = token.role; // 👈 Add this line
+    async session({ session, token, trigger }: any) {
+      // Map the token data to the session object
+      session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.role = token.role;
 
-        // Optionally handle session updates (like name change)
-        if (trigger === 'update' && token.name) {
-            session.user.name = token.name;
-        }
+      // Optionally handle session updates (like name change)
+      if (trigger === 'update' && token.name) {
+        session.user.name = token.name;
+      }
 
-        // Return the updated session object
-        return session;
+      // Return the updated session object
+      return session;
     },
 
 
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user, trigger, session }: any) {
-        // Assign user fields to token
+      // Assign user fields to token
       if (user) {
         token.id = user.id;
         token.role = user.role;
