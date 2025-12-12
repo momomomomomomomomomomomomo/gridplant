@@ -7,6 +7,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '@/db/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { authConfig } from './auth.config';
+import { cookies } from 'next/headers';
 
 export const config = {
   ...authConfig,
@@ -126,6 +127,30 @@ export const config = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+
+        if (trigger === 'signIn' || trigger === 'signUp') {
+        const cookiesObject = await cookies();
+        const sessionCartId = cookiesObject.get('sessionCartId')?.value;
+
+        if (sessionCartId) {
+          const sessionCart = await prisma.cart.findFirst({
+            where: { sessionCartId },
+          });
+
+          if (sessionCart) {
+            // Overwrite any existing user cart
+            await prisma.cart.deleteMany({
+              where: { userId: user.id },
+            });
+
+            // Assign the guest cart to the logged-in user
+            await prisma.cart.update({
+              where: { id: sessionCart.id },
+              data: { userId: user.id },
+            });
+          }
+        }
+      }
 
         // If user has no name, use email as their default name
         if (user.name === 'NO_NAME') {

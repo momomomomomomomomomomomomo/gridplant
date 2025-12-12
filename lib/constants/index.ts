@@ -19,3 +19,11 @@ export const signUpDefaultValues = {
   password: 'password',
   confirmPassword: 'password',
 };
+
+export const shippingAddressDefaultValues = {
+  fullName: 'Moustafa Ismail',
+  streetAddress: 'Hadayek Helwan',
+  city: 'Cairo',
+  postalCode: '11431',
+  country: 'Egypt',
+};
