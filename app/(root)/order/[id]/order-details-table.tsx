@@ -183,7 +183,7 @@ const handleApprovePayPalOrder = async (data: { orderID: string }) => {
         <PayPalButtons
           createOrder={handleCreatePayPalOrder}
           onApprove={handleApprovePayPalOrder}
-          fundingSource={FUNDING.PAYPAL}
+          
         />
       </PayPalScriptProvider>
     </div>

@@ -26,3 +26,5 @@ export type Order = z.infer<typeof insertOrderSchema> & {
 };
 
 export type PaymentResult = z.infer<typeof paymentResultSchema>;
+
+
