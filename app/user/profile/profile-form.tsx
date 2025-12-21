@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import {toast} from "sonner";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { updateProfileSchema } from '@/lib/validator';
@@ -19,6 +20,7 @@ import { updateProfile } from '@/lib/actions/user.actions';
 
 const ProfileForm = () => {
   const { data: session, update } = useSession();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     resolver: zodResolver(updateProfileSchema),
@@ -45,7 +47,8 @@ async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
 
   await update(newSession);
 
-  toast.success(res.message)
+  toast.success(res.message);
+  router.refresh();
 }
 
 

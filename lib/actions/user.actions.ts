@@ -3,6 +3,7 @@
 import { auth, signIn, signOut } from '@/auth';
 import { paymentMethodSchema, shippingAddressSchema, signInFormSchema, signUpFormSchema } from '../validator';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { revalidatePath } from 'next/cache';
 import { hashSync } from 'bcrypt-ts-edge';
 import { prisma } from '@/db/prisma';
 import { formatError } from '../utils';
@@ -184,6 +185,8 @@ export async function updateProfile(user: { name: string; email: string }) {
         name: user.name,
       },
     });
+
+    revalidatePath('/user/profile');
 
     return {
       success: true,
