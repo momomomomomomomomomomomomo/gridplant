@@ -4,6 +4,7 @@ import { prisma } from '../../db/prisma';
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from '../constants';
 import { convertToPlainObject, formatError } from '../utils';
 import { insertProductSchema, updateProductSchema } from '../validator';
+import { Prisma } from '@/lib/generated/prisma/client';
 import z from 'zod';
 
 // Get the latest products
@@ -36,16 +37,45 @@ export async function getAllProducts({
   page: number;
   category: string;
 }) {
-  const data = await prisma.product.findMany({
-  skip: (page - 1) * limit,
-  take: limit,
-});
-const dataCount = await prisma.product.count();
-return {
-  data,
-  totalPages: Math.ceil(dataCount / limit),
-};
+  const queryFilter: Prisma.ProductWhereInput =
+    query && query !== 'all'
+      ? {
+        OR: [
+          { id: { equals: query } },
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      }
+      : {};
 
+  const categoryFilter: Prisma.ProductWhereInput =
+    category && category !== 'all' ? { category } : {};
+
+  const data = await prisma.product.findMany({
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+    },
+    orderBy: { createdAt: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  const dataCount = await prisma.product.count({
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+    },
+  });
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
 }
 
 // Delete Product

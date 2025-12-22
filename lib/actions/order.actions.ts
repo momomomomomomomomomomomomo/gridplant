@@ -172,16 +172,16 @@ export async function approvePayPalOrder(
       throw new Error('Error in paypal payment')
 
     // Update order to paid
-  await updateOrderToPaid({
-    orderId,
-    paymentResult: {
-      id: captureData.id,
-      status: captureData.status,
-      email_address: captureData.payer.email_address,
-      pricePaid:
-        captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
-    },
-  });
+    await updateOrderToPaid({
+      orderId,
+      paymentResult: {
+        id: captureData.id,
+        status: captureData.status,
+        email_address: captureData.payer.email_address,
+        pricePaid:
+          captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
+      },
+    });
 
     revalidatePath(`/order/${orderId}`)
 
@@ -258,22 +258,34 @@ async function updateOrderToPaid({
 export async function getMyOrders({
   limit = PAGE_SIZE,
   page,
+  query,
 }: {
   limit?: number;
   page: number;
+  query?: string;
 }) {
   const session = await auth();
   if (!session?.user) throw new Error('User is not authenticated');
 
+  const queryFilter: Prisma.OrderWhereInput =
+    query && query !== 'all'
+      ? {
+        userId: session.user.id!,
+        id: {
+          equals: query,
+        },
+      }
+      : { userId: session.user.id! };
+
   const data = await prisma.order.findMany({
-    where: { userId: session.user.id! },
+    where: queryFilter,
     orderBy: { createdAt: 'desc' },
     take: limit,
     skip: (page - 1) * limit,
   });
 
   const dataCount = await prisma.order.count({
-    where: { userId: session.user.id! },
+    where: queryFilter,
   });
 
   return {
@@ -329,25 +341,50 @@ export async function getOrderSummary() {
 export async function getAllOrders({
   limit = PAGE_SIZE,
   page,
+  query,
 }: {
+  query?: string;
   limit?: number;
   page: number;
 }) {
+  const queryFilter: Prisma.OrderWhereInput =
+    query && query !== 'all'
+      ? {
+        OR: [
+          { id: { equals: query } },
+          {
+            user: {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+        ],
+      }
+      : {};
+
   const data = await prisma.order.findMany({
+    where: queryFilter,
     orderBy: { createdAt: 'desc' },
     take: limit,
     skip: (page - 1) * limit,
-    include: { user: { select: { name: true } } },
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
   });
 
-  const dataCount = await prisma.order.count();
+  const dataCount = await prisma.order.count({
+    where: queryFilter,
+  });
 
   return {
     data,
     totalPages: Math.ceil(dataCount / limit),
   };
 }
-
 
 // Delete Order
 export async function deleteOrder(id: string) {
