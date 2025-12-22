@@ -164,17 +164,8 @@
   @apply font-bold text-xl lg:text-2xl;
 }
 
-/* Uploadthing button text override */
-html.dark .upload-field .text-white {
-  color: #ffffff !important;
-}
 
-.upload-field .text-white {
-  color: #000000 !important;
-}
 
-/* Optional inline theme extension:
-   only keep what's actually different from the main @theme */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

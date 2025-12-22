@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth-guard';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Link } from 'lucide-react';
+import Link from 'next/link';
 import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 import Pagination from '@/components/shared/pagination';
 import DeleteDialog from '@/components/shared/delete-dialog';
