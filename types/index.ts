@@ -1,4 +1,4 @@
-import { cartItemSchema, insertCartSchema, insertOrderItemSchema, insertOrderSchema, insertProductSchema, paymentResultSchema, shippingAddressSchema } from "@/lib/validator";
+import { cartItemSchema, insertCartSchema, insertOrderItemSchema, insertOrderSchema, insertProductSchema, insertReviewSchema, paymentResultSchema, shippingAddressSchema } from "@/lib/validator";
 import z from "zod";
 
 export type Product = z.infer<typeof insertProductSchema> & {
@@ -33,3 +33,9 @@ export type SalesDataType = {
 }[]
 
 
+export type Review = z.infer<typeof insertReviewSchema> & {
+  id: string;
+  createdAt: Date;
+  user?: { name: string };
+  isVerifiedPurchase?: boolean;
+};

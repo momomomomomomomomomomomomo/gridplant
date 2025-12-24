@@ -6,15 +6,15 @@ export const SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
 export const LATEST_PRODUCTS_LIMIT =
-  Number(process.env.LATEST_PRODUCTS_LIMIT) || 4;  
+  Number(process.env.LATEST_PRODUCTS_LIMIT) || 4;
 
 export const signInDefaultValues = {
   email: 'mohamed@gmail.com',
   password: '123456',
-};  
+};
 
 export const signUpDefaultValues = {
-    name: 'Moustafa Ismail',
+  name: 'Moustafa Ismail',
   email: 'Moustafa@example.com',
   password: 'password',
   confirmPassword: 'password',
@@ -54,3 +54,9 @@ export const productDefaultValues = {
 export const USER_ROLES = process.env.USER_ROLES
   ? process.env.USER_ROLES.split(', ')
   : ['admin', 'user'];
+
+export const reviewFormDefaultValues = {
+  title: '',
+  comment: '',
+  rating: 0,
+};
