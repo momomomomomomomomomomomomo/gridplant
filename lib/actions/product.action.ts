@@ -8,10 +8,10 @@ import { Prisma } from '@/lib/generated/prisma/client';
 import z from 'zod';
 
 // Get the latest products
-export async function getLatestProducts() {
+export async function getLatestProducts({ getAll }: { getAll?: boolean } = {}) {
 
   const data = await prisma.product.findMany({
-    take: LATEST_PRODUCTS_LIMIT,
+    take: getAll ? undefined : LATEST_PRODUCTS_LIMIT,
     orderBy: { createdAt: 'desc' },
   });
 
@@ -31,44 +31,75 @@ export async function getAllProducts({
   limit = PAGE_SIZE,
   page,
   category,
+  price,
+  rating,
+  sort,
 }: {
   query: string;
+  category: string;
   limit?: number;
   page: number;
-  category: string;
+  price?: string;
+  rating?: string;
+  sort?: string;
 }) {
-  const queryFilter: Prisma.ProductWhereInput =
-    query && query !== 'all'
-      ? {
-        OR: [
-          { id: { equals: query } },
-          {
-            name: {
-              contains: query,
-              mode: 'insensitive',
-            },
-          },
-        ],
+  // Filter by query
+const queryFilter: Prisma.ProductWhereInput =
+  query && query !== 'all'
+    ? {
+        name: {
+          contains: query,
+          mode: 'insensitive',
+        } as Prisma.StringFilter,
       }
-      : {};
+    : {};
+
 
   const categoryFilter: Prisma.ProductWhereInput =
     category && category !== 'all' ? { category } : {};
 
+    // Filter by price
+const priceFilter: Prisma.ProductWhereInput =
+  price && price !== 'all'
+    ? {
+        price: {
+          gte: Number(price.split('-')[0]),
+          lte: Number(price.split('-')[1]),
+        },
+      }
+    : {};
+
+    // Filter by rating
+const ratingFilter =
+  rating && rating !== 'all' ? { rating: { gte: Number(rating) } } : {};
+
+
   const data = await prisma.product.findMany({
-    where: {
-      ...queryFilter,
-      ...categoryFilter,
-    },
-    orderBy: { createdAt: 'desc' },
-    skip: (page - 1) * limit,
-    take: limit,
-  });
+  where: {
+    ...queryFilter,
+    ...categoryFilter,
+    ...ratingFilter,
+    ...priceFilter,
+  },
+  orderBy:
+    sort === 'lowest'
+      ? { price: 'asc' }
+      : sort === 'highest'
+      ? { price: 'desc' }
+      : sort === 'rating'
+      ? { rating: 'desc' }
+      : { createdAt: 'desc' },
+  skip: (page - 1) * limit,
+  take: limit,
+});
+
 
   const dataCount = await prisma.product.count({
     where: {
       ...queryFilter,
       ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
     },
   });
 
@@ -152,4 +183,40 @@ export async function getProductById(productId: string) {
   });
 
   return convertToPlainObject(data);
+}
+
+// Get product categories
+export async function getAllCategories() {
+  const data = await prisma.product.groupBy({
+    by: ['category'],
+    _count: true,
+  });
+
+  return data;
+}
+
+
+// Get featured products
+export async function getFeaturedProducts() {
+  const data = await prisma.product.findMany({
+    where: { isFeatured: true },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  });
+
+  return convertToPlainObject(data);
+}
+
+// Delete Image from UploadThing
+import { UTApi } from 'uploadthing/server';
+
+export async function deleteFile(fileUrl: string) {
+  try {
+    const utapi = new UTApi();
+    const fileKey = fileUrl.split('/f/')[1];
+    await utapi.deleteFiles(fileKey);
+    return { success: true, message: 'Image deleted successfully' };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
 }

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from "sonner";
-import { createProduct, updateProduct } from '@/lib/actions/product.action';
+import { createProduct, updateProduct, deleteFile } from '@/lib/actions/product.action';
 import { productDefaultValues } from '@/lib/constants';
 import { insertProductSchema, updateProductSchema } from '@/lib/validator';
 import { ControllerRenderProps, SubmitHandler } from 'react-hook-form';
@@ -27,6 +27,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { UploadButton } from '@/lib/uploadthing';
 
+import { Trash, } from 'lucide-react';
+import { useState } from 'react';
 
 const ProductForm = ({
   type,
@@ -38,6 +40,7 @@ const ProductForm = ({
   productId?: string;
 }) => {
   const router = useRouter();
+  const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof updateProductSchema> | z.infer<typeof insertProductSchema>>({
     resolver: (
@@ -56,12 +59,20 @@ const ProductForm = ({
   const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
     values
   ) => {
+    // On Update or Create, if successful, delete the removed files
+    const processDeletions = async () => {
+      if (filesToDelete.length > 0) {
+        await Promise.all(filesToDelete.map((url) => deleteFile(url)));
+      }
+    };
+
     if (type === 'Create') {
       const res = await createProduct(values);
 
       if (!res.success) {
         toast.error(res.message);
       } else {
+        await processDeletions();
         toast.success(res.message);
         router.push(`/admin/products`);
       }
@@ -77,11 +88,18 @@ const ProductForm = ({
       if (!res.success) {
         toast.error(res.message);
       } else {
+        await processDeletions();
+        toast.success(res.message);
         router.push(`/admin/products`);
       }
     }
   };
 
+  const removeImage = (imageToRemove: string) => {
+    setFilesToDelete((prev) => [...prev, imageToRemove]);
+    const newImages = images.filter((image) => image !== imageToRemove);
+    form.setValue('images', newImages);
+  };
 
   return (
     <Form {...form}>
@@ -242,14 +260,24 @@ const ProductForm = ({
                   <CardContent className='space-y-2 mt-2 min-h-48'>
                     <div className='flex-start space-x-2'>
                       {images.map((image: string) => (
-                        <Image
-                          key={image}
-                          src={image}
-                          alt='product image'
-                          className='w-20 h-20 object-cover object-center rounded-sm'
-                          width={100}
-                          height={100}
-                        />
+                        <div key={image} className="relative w-24 h-24">
+                          <Image
+                            src={image}
+                            alt='product image'
+                            className='w-full h-full object-cover object-center rounded-sm'
+                            width={100}
+                            height={100}
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full"
+                            onClick={() => removeImage(image)}
+                          >
+                            <Trash className="w-3 h-3" />
+                          </Button>
+                        </div>
                       ))}
                       <FormControl>
                         <UploadButton
@@ -272,47 +300,61 @@ const ProductForm = ({
 
         </div>
         <div className='upload-field'>
-  Featured Product
-  <Card>
-    <CardContent className='space-y-2 mt-2  '>
-      <FormField
-        control={form.control}
-        name='isFeatured'
-        render={({ field }) => (
-          <FormItem className='space-x-2 items-center'>
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
+          Featured Product
+          <Card>
+            <CardContent className='space-y-2 mt-2  '>
+              <FormField
+                control={form.control}
+                name='isFeatured'
+                render={({ field }) => (
+                  <FormItem className='space-x-2 items-center'>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Is Featured?</FormLabel>
+                  </FormItem>
+                )}
               />
-            </FormControl>
-            <FormLabel>Is Featured?</FormLabel>
-          </FormItem>
-        )}
-      />
-      {isFeatured && banner && (
-        <Image
-          src={banner}
-          alt='banner image'
-          className=' w-full object-cover object-center rounded-sm'
-          width={1920}
-          height={680}
-        />
-      )}
-      {isFeatured && !banner && (
-        <UploadButton
-          endpoint='imageUploader'
-          onClientUploadComplete={(res: { url: string }[]) => {
-            form.setValue('banner', res[0].url);
-          }}
-          onUploadError={(error: Error) => {
-            toast.error(`Failed to upload image: ${error.message}`);
-          }}
-        />
-      )}
-    </CardContent>
-  </Card>
-</div>
+              {isFeatured && banner && (
+                <div className='relative'>
+                  <Image
+                    src={banner}
+                    alt='banner image'
+                    className='w-full object-cover object-center rounded-sm'
+                    width={1920}
+                    height={680}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 rounded-full"
+                    onClick={() => {
+                      setFilesToDelete((prev) => [...prev, banner]);
+                      form.setValue('banner', '');
+                    }}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+              {isFeatured && !banner && (
+                <UploadButton
+                  endpoint='imageUploader'
+                  onClientUploadComplete={(res: { url: string }[]) => {
+                    form.setValue('banner', res[0].url);
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast.error(`Failed to upload image: ${error.message}`);
+                  }}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         <div>
           {/* Description */}
