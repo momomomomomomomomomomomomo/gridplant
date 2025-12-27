@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import Stripe from 'stripe';
 import { getOrderById } from '@/lib/actions/order.actions';
 import { Button } from '@/components/ui/button';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
 export const metadata: Metadata = {
   title: 'Stripe Payment Success',
 };
@@ -12,6 +12,9 @@ const SuccessPage = async (props: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ payment_intent: string }>;
 }) => {
+  // Initialize Stripe inside the component
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+  
   //  Get the order id and payment intent id from the URL
   const { id } = await props.params;
   const { payment_intent: paymentIntentId } = await props.searchParams;
