@@ -60,3 +60,4 @@ export const reviewFormDefaultValues = {
   comment: '',
   rating: 0,
 };
+

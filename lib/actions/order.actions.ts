@@ -10,7 +10,7 @@ import { prisma } from '@/db/prisma';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { revalidatePath } from 'next/cache';
 import { paypal } from '../paypal';
-import { CartItem, PaymentResult, SalesDataType } from '@/types';
+import { CartItem, PaymentResult, ShippingAddress, SalesDataType } from '@/types';
 import { PAGE_SIZE } from '../constants';
 
 // Create an order
@@ -251,6 +251,11 @@ export async function updateOrderToPaid({
   if (!updatedOrder) {
     throw new Error('Order not found');
   }
+
+
+
+ 
+
 };
 
 
