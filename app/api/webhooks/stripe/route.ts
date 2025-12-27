@@ -14,19 +14,19 @@ export async function POST(req: NextRequest) {
     req.headers.get('stripe-signature') as string,
     process.env.STRIPE_WEBHOOK_SECRET as string
   );
-  // charge.succeeded indicates a successful payment
-  if (event.type === 'charge.succeeded') {
+  // payment_intent.succeeded indicates a successful payment
+  if (event.type === 'payment_intent.succeeded') {
     // Retrieve the order ID from the payment metadata
-    const { object } = event.data;
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
     // Update the order status to paid
     await updateOrderToPaid({
-      orderId: object.metadata.orderId,
+      orderId: paymentIntent.metadata.orderId,
       paymentResult: {
-        id: object.id,
+        id: paymentIntent.id,
         status: 'COMPLETED',
-        email_address: object.billing_details.email!,
-        pricePaid: (object.amount / 100).toFixed(),
+        email_address: paymentIntent.receipt_email || '',
+        pricePaid: (paymentIntent.amount / 100).toFixed(2),
       },
     });
 
@@ -35,6 +35,6 @@ export async function POST(req: NextRequest) {
     });
   }
   return NextResponse.json({
-    message: 'event is not charge.succeeded',
+    message: 'event is not payment_intent.succeeded',
   });
 }
