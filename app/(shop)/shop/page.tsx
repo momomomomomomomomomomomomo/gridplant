@@ -5,7 +5,6 @@ import {
 } from '@/lib/actions/product.action';
 import ProductCarousel from '@/components/shared/product/product-carousel';
 import ViewAllProductsButton from "@/components/view-all-products-button";
-import IconBoxes from "@/components/icon-boxes";
 
 
 const HomePage = async () => {
@@ -14,12 +13,11 @@ const HomePage = async () => {
 
   return (
     <div>
-     
+
       {featuredProducts.length > 0 && <ProductCarousel data={featuredProducts} />}
 
       <ProductList title='Newest Arrivals' data={latestProducts} />
       <ViewAllProductsButton />
-       <IconBoxes />
     </div>
   );
 

@@ -1,4 +1,9 @@
 import React from 'react';
+import { SessionProvider } from 'next-auth/react';
+import Header from '@/components/shared/header';
+import Footer from '@/components/footer';
+
+export const dynamic = 'force-dynamic';
 
 export default function AnalysisLayout({
     children,
@@ -6,10 +11,14 @@ export default function AnalysisLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="flex flex-col min-h-screen">
-            <main className="flex-1">
-                {children}
-            </main>
-        </div>
+        <SessionProvider>
+            <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1">
+                    {children}
+                </main>
+                <Footer />
+            </div>
+        </SessionProvider>
     );
 }

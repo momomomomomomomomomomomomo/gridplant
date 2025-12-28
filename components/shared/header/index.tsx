@@ -19,14 +19,14 @@ const Header = () => {
               height={48}
               alt={`${APP_NAME} logo`}
             />
-            <span className='hidden lg:block font-bold text-2xl ml-3'>
+            <span className='hidden lg:block font-bold text-2xl ml-3 text-primary'>
               {APP_NAME}
             </span>
           </Link>
         </div>
         <div className='hidden md:block'>
-  <Search />
-</div>
+          <Search />
+        </div>
 
         <Menu />
       </div>

@@ -21,6 +21,10 @@ const links = [
     title: 'Users',
     href: '/admin/users',
   },
+  {
+    title: 'Analysis',
+    href: '/admin/analysis',
+  },
 ];
 
 export function MainNav({
