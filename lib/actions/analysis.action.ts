@@ -69,7 +69,7 @@ Return the response in strictly valid JSON format with keys: "isPlant" (boolean)
         // Check if it's not a plant
         if (data.isPlant === false) {
             await utapi.deleteFiles(imageKey);
-            return { success: false, error: 'This image does not appear to be a plant. Please upload a clear photo of a plant.' };
+            return { success: false, error: 'Please upload plant image' };
         }
 
         // Save to DB
