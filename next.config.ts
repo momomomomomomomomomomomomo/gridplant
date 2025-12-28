@@ -6,10 +6,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'utfs.io',
-        pathname: '/**', 
-      },
+        pathname: '/**',
+      }
     ],
-    // unoptimized: true, 
+    unoptimized: true,
   },
 };
 
