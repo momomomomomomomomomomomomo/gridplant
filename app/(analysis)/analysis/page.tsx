@@ -146,9 +146,6 @@ export default function AnalysisPage() {
 
             {!isAnalyzing && status === 'authenticated' && (
                 <div className="mt-6 text-center space-y-3">
-                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                        🔒 Your image is analyzed securely and deleted immediately after processing.
-                    </p>
                     <a
                         href="/user/analysis"
                         className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium"
