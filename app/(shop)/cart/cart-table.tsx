@@ -29,7 +29,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4'>
         <h1 className='text-2xl font-bold'>Shopping Cart is empty</h1>
-        <Link href='/'>
+        <Link href='/shop'>
           <Button variant='default'>Go to Shopping</Button>
         </Link>
       </div>

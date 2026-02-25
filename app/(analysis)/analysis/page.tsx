@@ -23,7 +23,7 @@ export default function AnalysisPage() {
         'Generating care recommendations...',
         'Almost there...',
     ];
-
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleUploadComplete = async (res: any[]) => {
         if (!res || res.length === 0) return;
 
@@ -93,7 +93,7 @@ export default function AnalysisPage() {
                     <Leaf className="w-8 h-8 text-green-500" />
                     <div>
                         <p className="font-semibold">Health Assessment</p>
-                        <p className="text-sm text-muted-foreground">Check if it's healthy</p>
+                        <p className="text-sm text-muted-foreground">Check if it&apos;s healthy</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-card border">

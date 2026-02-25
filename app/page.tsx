@@ -160,7 +160,7 @@ const LandingPage = async () => {
                         <div className="hidden sm:block w-px h-6 bg-border"></div>
                         <div className="flex items-center gap-2">
                             <Truck className="w-5 h-5 text-primary" />
-                            <span className="font-medium">Free Shipping $50+</span>
+                            <span className="font-medium">Free Shipping 50+ L.E</span>
                         </div>
                         <div className="hidden sm:block w-px h-6 bg-border"></div>
                         <div className="flex items-center gap-2">

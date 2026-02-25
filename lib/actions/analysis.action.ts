@@ -91,6 +91,7 @@ Return the response in strictly valid JSON format with keys: "isPlant" (boolean)
         revalidatePath('/user/analysis');
 
         return { success: true, analysisId: analysis.id };
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error('Analysis failed:', error);
         console.error('Error details:', error?.message || error);

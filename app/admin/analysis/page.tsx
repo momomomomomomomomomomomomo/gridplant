@@ -98,6 +98,7 @@ export default async function AdminAnalysisPage() {
                                         </TableCell>
                                         <TableCell>{analysis.plantName}</TableCell>
                                         <TableCell>
+                                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                             <Badge variant={getStatusVariant(analysis.status) as any}>
                                                 {analysis.status}
                                             </Badge>

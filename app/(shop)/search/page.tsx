@@ -99,27 +99,27 @@ const getFilterUrl = ({
 
 const prices = [
   {
-    name: '$1 to $50',
+    name: '1 to 50 L.E',
     value: '1-50',
   },
   {
-    name: '$51 to $100',
+    name: '51 to 100 L.E',
     value: '51-100',
   },
   {
-    name: '$101 to $200',
+    name: '101 to 200 L.E',
     value: '101-200',
   },
   {
-    name: '$201 to $500',
+    name: '201 to 500 L.E',
     value: '201-500',
   },
   {
-    name: '$501 to $1000',
+    name: '501 to 1000 L.E',
     value: '501-1000',
   },
   {
-    name: 'Above $1000',
+    name: 'Above 1000 L.E',
     value: '1000-9999999',
   },
 ];
