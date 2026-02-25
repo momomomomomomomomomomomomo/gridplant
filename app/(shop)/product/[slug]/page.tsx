@@ -15,7 +15,7 @@ const ProductDetailsPage = async (props: {
 }) => {
   const params = await props.params;
   const session = await auth();
-const userId = session?.user?.id;
+  const userId = session?.user?.id;
 
   const { slug } = params;
 
@@ -32,20 +32,20 @@ const userId = session?.user?.id;
           <div className='col-span-2'> <ProductImages images={product.images!} /> </div>
 
           {/* Details Column */}
-         <div className='col-span-2 p-5'>
+          <div className='col-span-2 p-5'>
             <div className='flex flex-col gap-6'>
               <p>
                 {product.brand} {product.category}
               </p>
               <h1 className='h3-bold'>{product.name}</h1>
-             <Rating value={Number(product.rating)} />
-<p>{product.numReviews} reviews</p>
+              <Rating value={Number(product.rating)} />
+              <p>{product.numReviews} reviews</p>
 
-               <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
-                  <ProductPrice
-                    value={Number(product.price)}
-                    className='w-24 rounded-full bg-green-100 text-green-700 px-5 py-2'
-                  />
+              <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+                <ProductPrice
+                  value={Number(product.price)}
+                  className='w-fit rounded-full bg-green-100 text-green-700 px-5 py-2'
+                />
               </div>
             </div>
             <div className='mt-10'>
@@ -93,13 +93,13 @@ const userId = session?.user?.id;
         </div>
       </section>
       <section className='mt-10'>
-  <h2 className='h2-bold  mb-5'>Customer Reviews</h2>
-  <ReviewList
-    productId={product.id}
-    productSlug={product.slug}
-    userId={userId || ''}
-  />
-</section>
+        <h2 className='h2-bold  mb-5'>Customer Reviews</h2>
+        <ReviewList
+          productId={product.id}
+          productSlug={product.slug}
+          userId={userId || ''}
+        />
+      </section>
 
     </>
   );

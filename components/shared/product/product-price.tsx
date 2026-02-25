@@ -8,15 +8,15 @@ const ProductPrice = ({
   className?: string;
 }) => {
   // Ensures two decimal places
-  const stringValue = value.toFixed(2); 
+  const stringValue = value.toFixed(2);
   // Split into integer and decimal parts
-  const [intValue, floatValue] = stringValue.split('.'); 
+  const [intValue, floatValue] = stringValue.split('.');
 
   return (
     <p className={cn('text-2xl', className)}>
+      <span className='text-xs align-super'>L.E&nbsp;</span>
       {intValue}
       <span className='text-xs align-super'>.{floatValue}</span>
-      <span className='text-xs align-super'> L.E</span>
     </p>
   );
 };
