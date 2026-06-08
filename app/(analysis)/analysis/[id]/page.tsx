@@ -1,4 +1,5 @@
 import { getAnalysisById } from '@/lib/actions/analysis.action';
+import { formatCurrency } from '@/lib/utils';
 import { getProductsByNames } from '@/lib/actions/product-lookup.action';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -163,7 +164,7 @@ export default async function AnalysisResultPage({ params }: { params: Promise<{
                                                 </h3>
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-lg font-bold text-primary">
-                                                        ${Number(product.price).toFixed(2)}
+                                                        {formatCurrency(product.price)}
                                                     </span>
                                                     <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors flex items-center gap-1">
                                                         View <ArrowLeft className="w-3 h-3 rotate-180" />
